@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Transformer {
 
 	public static PointList readCSV(){
-		String csvFile = "C:/Users/Philipp/Desktop/Studium/LeapMotion/csv/open_fast.csv";
+		String csvFile = "C:/Users/Philipp/Desktop/Studium/LeapMotion/csv/close_fast.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";

@@ -8,6 +8,8 @@ public class Main {
 		System.out.println(pointList.getGesture());
 		System.out.println(pointList.getSpeed());
 
+		pointList.distanceToFirstPoint();
+
 	}
 
 }
