@@ -6,7 +6,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		Transformer transformer = new Transformer();
 		PointList pointList = transformer.readCSV();
-		System.out.println(pointList.getGesture());
+		//System.out.println(pointList.getGesture());
 
 	}
 

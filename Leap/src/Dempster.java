@@ -27,11 +27,11 @@ public class Dempster {
 	//Erstellen der Mengen der einzelnen Möglichkeiten
 	private void addHashes()
 	{
-		open.put(Emotion.ÄRGER.toString(),defaultPOSSIBLE);
+		open.put(Emotion.AERGER.toString(),defaultPOSSIBLE);
 		open.put(Emotion.FREUDE.toString(),defaultPOSSIBLE);
 		open.put(Emotion.ÜBERRASCHUNG.toString(),defaultPOSSIBLE);
 		
-		repeat.put(Emotion.ÄRGER.toString(),defaultPOSSIBLE);
+		repeat.put(Emotion.AERGER.toString(),defaultPOSSIBLE);
 		repeat.put(Emotion.FREUDE.toString(),defaultPOSSIBLE);
 		
 		closed.put(Emotion.TRAUER.toString(),defaultPOSSIBLE);
@@ -42,10 +42,10 @@ public class Dempster {
 		
 		//Ärger und Freude sollten weniger Plausibel sein: noch nach Lösung suchen
 		slow.put(Emotion.TRAUER.toString(),defaultPOSSIBLE);
-		slow.put(Emotion.ÄRGER.toString(),defaultPOSSIBLE);
+		slow.put(Emotion.AERGER.toString(),defaultPOSSIBLE);
 		slow.put(Emotion.FREUDE.toString(),defaultPOSSIBLE);
 		
-		fast.put(Emotion.ÄRGER.toString(),defaultPOSSIBLE);
+		fast.put(Emotion.AERGER.toString(),defaultPOSSIBLE);
 		fast.put(Emotion.VERACHTUNG.toString(),defaultPOSSIBLE);
 		fast.put(Emotion.EKEL.toString(),defaultPOSSIBLE);
 		

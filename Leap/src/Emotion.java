@@ -1,7 +1,7 @@
 
 public enum Emotion {
 	
-	ÄRGER ("Ärger"),
+	AERGER ("Ärger"),
 	FREUDE ("Freude"),
 	ÜBERRASCHUNG ("Überraschung"),
 	VERACHTUNG ("Verachtung"),
