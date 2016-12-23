@@ -2,23 +2,15 @@ import java.util.LinkedList;
 import java.math.*;
 
 public class PointList extends LinkedList<Point> {
-	
+
+
 	public String getGesture(){
-        //compare first and last element
-	    int compareX = Double.compare(getFirst().getX(), get(this.size()-1).getX());
 
-		if(compareX < 0){
-			return "Open";
-		}
-		else{
-			return "Close";
-		}
-		
-	}
+	    //nur x,y ist relevant, z spielt für die Bewegungsunterscheidung keine Rolle
 
-	public void distanceToFirstPoint(){
 		Double avgDistanceX = 0.0;
 		Double avgDistanceY = 0.0;
+		StringBuilder strReturn = new StringBuilder();
 
 		//die Koordinaten des ersten Punktes speichern
         double x = getFirst().getX();
@@ -30,7 +22,7 @@ public class PointList extends LinkedList<Point> {
             avgDistanceX += Math.abs(get(i).getX()-x);
             avgDistanceY += Math.abs(get(i).getY()-y);
 
-			System.out.println("x: "+x+" y: "+y);
+			System.out.println("x: "+get(i).getX()+" y: "+get(i).getY());
 		}
 
 		//Durchschnitt des Abstandes berechnen => wenn avgX sehr groß ist, wird es eine rechts/links Bewegung sein
@@ -38,21 +30,29 @@ public class PointList extends LinkedList<Point> {
 		avgDistanceX = avgDistanceX/(this.size()-1);
         avgDistanceY = avgDistanceY/(this.size()-1);
 
-		System.out.println("avg x: "+  avgDistanceX.intValue() + " avg y: "+avgDistanceY.intValue());
+        strReturn.append("Bewegung: ");
+        if(avgDistanceX < 20 && avgDistanceY > 20){
+            strReturn.append("klopfen ");
+        }
+        else{
+            strReturn.append("rechts/links ");
+
+            //Geschwindigkeit abhängig der Anzahl der erkannten Punkte
+            if((this.size()-1) < 75){
+                strReturn.append("schnell");
+            }
+            else{
+                strReturn.append("langsam");
+            }
+        }
+
+		return strReturn.toString();
 
 	}
-	
-	public String getSpeed(){
-	    //more than 80 points in the excel file means, that the movement was slow
-		if(size() > 80){
-			return "Slow";
-		}
-		else{
-			return "Fast";
-		}
-	}
-	
-	
 
-	
+	public void append(PointList list){
+        for (Point point:list) {
+            this.add(point);
+        }
+    }
 }
