@@ -12,6 +12,7 @@ public class Dempster {
 	Map<String, Double> fast = new HashMap<String, Double>();
 	Map<String, Double> speedUnknown = new HashMap<String, Double>();
 	
+	
 	private final double defaultPOSSIBLE = 0.7;
 	private final double defaultUNKNOWN = 0.3;
 	private final String EMPTY = "empty";
@@ -20,7 +21,7 @@ public class Dempster {
 	public Dempster() {
 		addHashes();
 		//Testzwecke
-		getPossibleResults(Direction.OPEN, Speed.FAST);
+		//System.out.println(getPossibleResults(Direction.OPEN, Speed.FAST));
 	}
 
 	//Erstellen der Mengen der einzelnen Möglichkeiten
@@ -99,6 +100,8 @@ public class Dempster {
 		Map<String,Double> accumulationUnknownSpeed = intersectCalculate(directionUnknown, possibleSpeed);
 		Map<String,Double> accumulationUnknown = intersectCalculate(directionUnknown, speedUnknown);
 		
+		Map<String, Double> plausibilität = new HashMap<String, Double>();
+		
 		double konflikt = 0;
 		
 		//ToDO Konflikt K
@@ -142,10 +145,19 @@ public class Dempster {
 		}
 		
 		
-		//ToDo Plausibilität
+		//Plausibilität
 		
+		accumulationDirectSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationDirectUnknown.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationUnknownSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationUnknown.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
 		
-		return null;
+		StringBuilder result = new StringBuilder();
+		
+		for (Map.Entry<String, Double> entry : plausibilität.entrySet()) {
+		   result.append(" Emotion: "+entry.getKey()+" Plausibilität: "+entry.getValue().toString()+"\n");
+		}
+		return result.toString();
 	}
 	
 	private Map<String,Double> intersectCalculate(Map<String, Double> mapOne, Map<String, Double> mapTwo)
