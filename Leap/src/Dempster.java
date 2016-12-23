@@ -99,9 +99,52 @@ public class Dempster {
 		Map<String,Double> accumulationUnknownSpeed = intersectCalculate(directionUnknown, possibleSpeed);
 		Map<String,Double> accumulationUnknown = intersectCalculate(directionUnknown, speedUnknown);
 		
+		double konflikt = 0;
+		
 		//ToDO Konflikt K
+		if(getFirstKeyofHashMap(accumulationDirectSpeed).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationDirectSpeed);
+			accumulationDirectSpeed.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationDirectUnknown).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationDirectUnknown);
+			accumulationDirectUnknown.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationUnknownSpeed).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationUnknownSpeed);
+			accumulationUnknownSpeed.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationUnknown).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationUnknown);
+			accumulationUnknown.clear();
+		}
+		
+		if(Double.compare(konflikt, 0)!= 0)
+		{
+			konflikt = 1/(1-konflikt);
+			
+			if(!accumulationDirectSpeed.isEmpty())
+				calculateThroughMap(accumulationDirectSpeed,konflikt);
+			
+			if(!accumulationDirectUnknown.isEmpty())
+				calculateThroughMap(accumulationDirectUnknown,konflikt);
+			
+			if(!accumulationUnknownSpeed.isEmpty())
+				calculateThroughMap(accumulationUnknownSpeed,konflikt);
+			
+			if(!accumulationUnknown.isEmpty())
+				calculateThroughMap(accumulationUnknown,konflikt);
+			
+		}
+		
 		
 		//ToDo Plausibilität
+		
+		
 		return null;
 	}
 	
@@ -118,18 +161,35 @@ public class Dempster {
 		
 		if(result.isEmpty())
 		{
-			 Map.Entry<String,Double> entry = mapOne.entrySet().iterator().next();
-			 String key= entry.getKey();
-			 Double valueOne = mapOne.get(key);
-			 
-			 Map.Entry<String,Double> entryTwo =mapTwo.entrySet().iterator().next();
-			 String keyTwo = entryTwo.getKey();
-			 Double valueTwo = mapTwo.get(keyTwo);
+			 Double valueOne = getFirstValueofHashMap(mapOne);
+			 Double valueTwo = getFirstValueofHashMap(mapTwo);
 			 
 			result.put(EMPTY, valueOne*valueTwo);
 		}
 		
 		return result;
+	}
+	
+	private void calculateThroughMap(Map<String, Double> map, double k)
+	{
+		for (Map.Entry<String, Double> entry : map.entrySet()) {
+		    entry.setValue(entry.getValue()*k);
+		}
+	}
+	
+	
+	double getFirstValueofHashMap(Map<String, Double> map)
+	{
+		 Map.Entry<String,Double> entry = map.entrySet().iterator().next();
+		 String key= entry.getKey();
+		 return map.get(key);
+	}
+	
+	String getFirstKeyofHashMap(Map<String, Double> map)
+	{
+		 Map.Entry<String,Double> entry = map.entrySet().iterator().next();
+		 return  entry.getKey();
+		 
 	}
 	
 }
