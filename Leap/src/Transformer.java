@@ -10,7 +10,7 @@ public class Transformer {
 
 
 	public PointList readCSV(){
-		String csvFile = "C:/Users/Philipp/Desktop/Studium/LeapMotion/csv/klopfen.csv";
+		String csvFile = "C:/Users/Poescho/Documents/GitHub/LeapMotion/csv/open_fast.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
