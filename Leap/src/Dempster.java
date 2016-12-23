@@ -19,6 +19,7 @@ public class Dempster {
 	
 	public Dempster() {
 		addHashes();
+		//Testzwecke
 		getPossibleResults(Direction.OPEN, Speed.FAST);
 	}
 
