@@ -3,7 +3,6 @@ import java.math.*;
 
 public class PointList extends LinkedList<Point> {
 
-
 	public String getGesture(){
 
 	    //nur x,y ist relevant, z spielt für die Bewegungsunterscheidung keine Rolle
@@ -22,7 +21,7 @@ public class PointList extends LinkedList<Point> {
             avgDistanceX += Math.abs(get(i).getX()-x);
             avgDistanceY += Math.abs(get(i).getY()-y);
 
-			System.out.println("x: "+get(i).getX()+" y: "+get(i).getY());
+			//System.out.println("x: "+get(i).getX()+" y: "+get(i).getY());
 		}
 
 		//Durchschnitt des Abstandes berechnen => wenn avgX sehr groß ist, wird es eine rechts/links Bewegung sein
@@ -35,7 +34,7 @@ public class PointList extends LinkedList<Point> {
             strReturn.append("klopfen ");
         }
         else{
-            strReturn.append("rechts/links ");
+            strReturn.append(getDirection());
 
             //Geschwindigkeit abhängig der Anzahl der erkannten Punkte
             if((this.size()-1) < 75){
@@ -49,6 +48,15 @@ public class PointList extends LinkedList<Point> {
 		return strReturn.toString();
 
 	}
+
+    private String getDirection(){
+        if(this.getFirst().getX() < this.getLast().getX()){
+            return "Bewegung rechts ";
+        }
+        else{
+            return "Bewegung links ";
+        }
+    }
 
 	public void append(PointList list){
         for (Point point:list) {

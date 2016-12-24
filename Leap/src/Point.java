@@ -4,24 +4,17 @@ public class Point {
 	private double x;
 	private double y;
 	private double z;
-	private double velocityX;
-	private double velocityY;
-	private double velocityZ;
 
 	public Point(){
 
 	}
 
-	public Point(String sX, String sY, String sZ, String velocityX, String velocityY, String velocityZ){
+	public Point(String sX, String sY, String sZ){
 		
 		x = Double.parseDouble(sX);
 		y = Double.parseDouble(sY);
 		z = Double.parseDouble(sZ);
-		
-		this.velocityX = Math.abs(Double.parseDouble(velocityX));
-		this.velocityY = Math.abs(Double.parseDouble(velocityY));
-		this.velocityZ = Math.abs(Double.parseDouble(velocityZ));
-		
+
 	}
 
 	public void setX(double x){this.x = x;}
@@ -41,17 +34,6 @@ public class Point {
 	public double getZ(){
 		return z;
 	}
-	
-	public double getVelocityX(){
-		return velocityX;
-	}
-	
-	public double getVelocityY(){
-		return velocityY;
-	}
-	
-	public double getVelocityZ(){
-		return velocityZ;
-	}
+
 
 }

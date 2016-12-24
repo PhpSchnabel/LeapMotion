@@ -3,13 +3,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
+
 
 public class Transformer {
-	ArrayList<PointList> myPointLists = new ArrayList<PointList>();
+	private ArrayList<PointList> myPointLists = new ArrayList<PointList>();
 
-	public PointList readCSV() {
-		String csvFile = "../csv/klopfen.csv";
+	public ArrayList<PointList> readCSV() {
+		String csvFile = "../csv/open_slow.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -24,15 +24,12 @@ public class Transformer {
 				// use comma as separator
 				String[] point = line.split(cvsSplitBy);
 
-				//System.out.println(point[0] + " " + point[1] + " " + point[2]);
-
 				if (!(point[0].equals("0.0") && point[1].equals("0.0") && point[2].equals("0.0"))) {
 					try {
-						pointList.add(new Point(point[0], point[1], point[2], point[3], point[4], point[5]));
+						pointList.add(new Point(point[0], point[1], point[2]));
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
 					}
-
 				}
 
 			}
@@ -55,16 +52,17 @@ public class Transformer {
 		removeMeasureErros();
 		appendLists();
 
-
+		/*
 		System.out.println("pointlists: "+ myPointLists.size());
 		for (PointList list:myPointLists) {
 			System.out.println("size: "+ list.size());
 
 			for (Point pkt:list) {
-				System.out.println("punkt y: "+ pkt.getY());
+				System.out.println("punkt x: "+ pkt.getX() + " y: "+pkt.getY());
 			}
 		}
-		return pointList;
+		*/
+		return myPointLists;
 	}
 
 	private void appendLists(){
