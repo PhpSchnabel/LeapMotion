@@ -1,10 +1,15 @@
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Dempster {
 	
@@ -83,15 +88,36 @@ public class Dempster {
 		    entry.setValue(entry.getValue()/length);
 		}
 		
+		//Sortieren der Resultatsliste
+		Map<String,Double> sortedList =	resultList.entrySet()
+													.stream()
+											        .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+											        .collect(Collectors.toMap(
+											          Map.Entry::getKey, 
+											          Map.Entry::getValue, 
+											          (e1, e2) -> e1, 
+											          LinkedHashMap::new));
 		
 		StringBuilder result = new StringBuilder();
 		
-		for (Map.Entry<String, Double> entry : resultList.entrySet()) {
-		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+entry.getValue().toString()+"\n");
+		result.append("Mögliche Emotionen sortiert nach ihrer Plausibilität:\n");
+		
+		//Ausgabe String formatieren
+		for (Map.Entry<String, Double> entry : sortedList.entrySet()) {
+		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+gerundeteAusgabe(entry.getValue(),2)+"\n");
 		}
 		
 		return result.toString();
 	}
+	
+	private String gerundeteAusgabe(double wert, int stellen) {
+	        StringBuilder sb = new StringBuilder(",##0.");
+	        for (int i=0; i<stellen; i++)
+	            sb.append("0");
+	        DecimalFormat df = new DecimalFormat(sb.toString());
+	        df.setRoundingMode(RoundingMode.HALF_UP);
+	       return df.format(wert).toString();
+	    }
 	
 	private List<Gesture> analyzeForRepeats(ArrayList<Gesture> gestureList) {
 		
