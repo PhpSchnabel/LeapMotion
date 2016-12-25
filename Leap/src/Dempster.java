@@ -102,7 +102,7 @@ public class Dempster {
 		
 		//Ausgabe String formatieren
 		for (Map.Entry<String, Double> entry : sortedList.entrySet()) {
-		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+roundedPrint(entry.getValue(),2)+"\n");
+		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+roundedPrint(entry.getValue(),2) + ", Zweifel: " +roundedPrint(1-entry.getValue(),2)+ "\n");
 		}
 		
 		return result.toString();
