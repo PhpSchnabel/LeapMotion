@@ -1,4 +1,4 @@
-
+//Enum für die möglichen Geschwindigkeiten einer Bewegung
 public enum Speed {
 	FAST ("Fast"),
     SLOW ("Slow");

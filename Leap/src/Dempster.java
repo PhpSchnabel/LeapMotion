@@ -3,16 +3,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Dempster {
 	
+//	Einzelne Mengen für die verschiedenen Fälle
 	Map<String, Double> open = new HashMap<String, Double>();
 	Map<String, Double> repeat = new HashMap<String, Double>();
 	Map<String, Double> closed = new HashMap<String, Double>();
@@ -22,20 +20,19 @@ public class Dempster {
 	Map<String, Double> speedNeutral = new HashMap<String, Double>();
 	Map<String, Double> unknown = new HashMap<String, Double>();
 	
-	
+	/*Festlegung der Evidenzen*/
 	private final double defaultPOSSIBLE = 0.7;
 	private final double defaultNEUTRAL = 0.2;
 	private final double defaultUNKNOWN = 0.1;
 	private final String EMPTY = "empty";
 	
 	
+	/*Default Konstruktor. Führt die Definition der Mengen durch*/
 	public Dempster() {
 		addHashes();
-		//Testzwecke
-		//System.out.println(getPossibleResults(Direction.OPEN, Speed.FAST));
 	}
 
-	//Erstellen der Mengen der einzelnen Möglichkeiten
+	//Befüllen der Mengen für die einzelnen Möglichkeiten
 	private void addHashes()
 	{
 		open.put(Emotion.AERGER.toString(),defaultPOSSIBLE);
@@ -50,8 +47,6 @@ public class Dempster {
 		directionNeutral.put(Emotion.VERACHTUNG.toString(),defaultNEUTRAL);
 		directionNeutral.put(Emotion.EKEL.toString(),defaultNEUTRAL);
 		
-		
-		//Ärger und Freude sollten weniger Plausibel sein: noch nach Lösung suchen
 		slow.put(Emotion.TRAUER.toString(),defaultPOSSIBLE);
 		slow.put(Emotion.AERGER.toString(),defaultPOSSIBLE);
 		slow.put(Emotion.FREUDE.toString(),defaultPOSSIBLE);
@@ -72,8 +67,11 @@ public class Dempster {
 		
 	}
 
+	
+//	Führt die Berechnung der Plausibilität durch und gibt einen Ergebnis String zur Ausgabe zurück
 	public String analyzeGestures(ArrayList<Gesture> gestureList)
 	{
+		//Überprüfe die übergebene List auf Repeatabfolgen
 		List<Gesture> analyzedList = analyzeForRepeats(gestureList);
 		int length = analyzedList.size();
 		Map<String,Double> resultList = new HashMap<String,Double>();
@@ -104,13 +102,14 @@ public class Dempster {
 		
 		//Ausgabe String formatieren
 		for (Map.Entry<String, Double> entry : sortedList.entrySet()) {
-		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+gerundeteAusgabe(entry.getValue(),2)+"\n");
+		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+roundedPrint(entry.getValue(),2)+"\n");
 		}
 		
 		return result.toString();
 	}
 	
-	private String gerundeteAusgabe(double wert, int stellen) {
+	//Runden des Wertes für eine schöne Ausgabe
+	private String roundedPrint(double wert, int stellen) {
 	        StringBuilder sb = new StringBuilder(",##0.");
 	        for (int i=0; i<stellen; i++)
 	            sb.append("0");
@@ -119,6 +118,7 @@ public class Dempster {
 	       return df.format(wert).toString();
 	    }
 	
+	//Überprüfung ob Liste mit Gesten Abfolgen enthält die auf ein Repeat schließen lassen
 	private List<Gesture> analyzeForRepeats(ArrayList<Gesture> gestureList) {
 		
 		
@@ -153,9 +153,9 @@ public class Dempster {
 		
 	}
 
+	//Startet die Evidenzberechnung, bestimmt welche Mengen betrachtet werden müssen
 	private Map<String,Double> getPossibleResults(Direction direction,Speed speed)
 	{
-		String result = "";
 		Map<String, Double> possibleDirection = null;
 		Map<String, Double> possibleSpeed = null;
 		
@@ -189,29 +189,25 @@ public class Dempster {
 		return calculcateEvidence(possibleDirection,possibleSpeed);
 	}
 
+	//Durchführung der Akkumulation und der Berechnung der Plausibilität
 	private Map<String,Double> calculcateEvidence(Map<String, Double> possibleDirection, Map<String, Double> possibleSpeed) {
 		
-		//Akumulation der Werte
-		//da
+		//Durchführung der Akkumulation
 		Map<String,Double> accumulationDirectSpeed = intersectCalculate(possibleDirection, possibleSpeed);
-		//da
 		Map<String,Double> accumulationDirectNeutralSpeed = intersectCalculate(possibleDirection, speedNeutral);
-		
 		Map<String,Double> accumulationDirectUnknow = intersectCalculate(possibleDirection, unknown);
-		//da
 		Map<String,Double> accumulationNeutralDirectionSpeed = intersectCalculate(directionNeutral, possibleSpeed);
 		Map<String,Double> accumulationUnknownSpeed = intersectCalculate(unknown, possibleSpeed);
 		Map<String,Double> accumulationNeutralDirectionNeutralSpeed = intersectCalculate(directionNeutral, speedNeutral);
 		Map<String,Double> accumulationUnknownNeutralSpeed = intersectCalculate(unknown, speedNeutral);
 		Map<String,Double> accumulationNeutralDirectionUnknown = intersectCalculate(directionNeutral, unknown);
-		//da
 		Map<String,Double> accumulationUnknown = intersectCalculate(unknown, unknown);
 		
 		Map<String, Double> plausibilität = new HashMap<String, Double>();
 		
 		double konflikt = 0;
 		
-		//ToDO Konflikt K
+		//Ist die Berechnung eines Konflikts K von Nöten?
 		if(getFirstKeyofHashMap(accumulationDirectSpeed).equals(EMPTY))
 		{
 			konflikt +=getFirstValueofHashMap(accumulationDirectSpeed);
@@ -260,7 +256,7 @@ public class Dempster {
 		
 		
 		
-		
+		//Berechnung des Konflikts K falls leere Mengen vorhanden waren
 		if(Double.compare(konflikt, 0)!= 0)
 		{
 			konflikt = 1/(1-konflikt);
@@ -295,8 +291,7 @@ public class Dempster {
 		}
 		
 		
-		//Plausibilität
-		
+		//Berechnung der Plausibilität
 		accumulationDirectSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
 		accumulationDirectNeutralSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
 		accumulationDirectUnknow.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
@@ -310,6 +305,8 @@ public class Dempster {
 		return plausibilität;
 	}
 	
+	
+	//Bestimme den Durchschnitt zweier Mengen
 	private Map<String,Double> intersectCalculate(Map<String, Double> mapOne, Map<String, Double> mapTwo)
 	{
 		Map<String,Double> result = new HashMap<String, Double>(mapOne);
@@ -332,6 +329,7 @@ public class Dempster {
 		return result;
 	}
 	
+	//Führe eine Berechnung auf allen Einträgen einer Map durch
 	private void calculateThroughMap(Map<String, Double> map, double k)
 	{
 		for (Map.Entry<String, Double> entry : map.entrySet()) {
@@ -339,15 +337,16 @@ public class Dempster {
 		}
 	}
 	
-	
-	double getFirstValueofHashMap(Map<String, Double> map)
+	//Erhalte den Wert des ersten Eintrags einer HashMap
+	private double getFirstValueofHashMap(Map<String, Double> map)
 	{
 		 Map.Entry<String,Double> entry = map.entrySet().iterator().next();
 		 String key= entry.getKey();
 		 return map.get(key);
 	}
 	
-	String getFirstKeyofHashMap(Map<String, Double> map)
+	//Erhalte den Key des ersten Eintrags einer HashMap
+	private String getFirstKeyofHashMap(Map<String, Double> map)
 	{
 		 Map.Entry<String,Double> entry = map.entrySet().iterator().next();
 		 return  entry.getKey();

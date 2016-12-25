@@ -1,4 +1,3 @@
-
 //Klasse zur Aufnahme der Gesten
 public class Gesture {
 	private Direction direction;

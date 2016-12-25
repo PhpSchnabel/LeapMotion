@@ -14,6 +14,8 @@ public class Main {
 		}
 		Dempster dempster = new Dempster();
 		gestureList.forEach((g)->System.out.println(g.getDirection()+ ", "+g.getSpeed()));
+		
+		//Gebe das Ergebnis der möglichen Emotionen aus
 		System.out.println(dempster.analyzeGestures(gestureList));
 		
 		//pointList.getGesture());

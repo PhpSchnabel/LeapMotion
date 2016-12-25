@@ -1,4 +1,4 @@
-
+//Enum für die möglichen Richtungen einer Bewegung
 public enum Direction {
 	OPEN ("Open"),
     CLOSE ("Close"),

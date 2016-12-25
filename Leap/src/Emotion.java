@@ -1,4 +1,4 @@
-
+//Enum für die möglichen Emotionen
 public enum Emotion {
 	
 	AERGER ("Ärger"),
