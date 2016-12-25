@@ -27,6 +27,7 @@ public class Dempster {
 	private final String EMPTY = "empty";
 	
 	
+	
 	/*Default Konstruktor. Führt die Definition der Mengen durch*/
 	public Dempster() {
 		addHashes();
@@ -71,6 +72,13 @@ public class Dempster {
 //	Führt die Berechnung der Plausibilität durch und gibt einen Ergebnis String zur Ausgabe zurück
 	public String analyzeGestures(ArrayList<Gesture> gestureList)
 	{
+		Emotion.AERGER.resetBelieve();
+		Emotion.EKEL.resetBelieve();
+		Emotion.FREUDE.resetBelieve();
+		Emotion.TRAUER.resetBelieve();
+		Emotion.VERACHTUNG.resetBelieve();
+		Emotion.ÜBERRASCHUNG.resetBelieve();
+		
 		//Überprüfe die übergebene List auf Repeatabfolgen
 		List<Gesture> analyzedList = analyzeForRepeats(gestureList);
 		int length = analyzedList.size();
@@ -102,7 +110,8 @@ public class Dempster {
 		
 		//Ausgabe String formatieren
 		for (Map.Entry<String, Double> entry : sortedList.entrySet()) {
-		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+roundedPrint(entry.getValue(),2) + ", Zweifel: " +roundedPrint(1-entry.getValue(),2)+ "\n");
+		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+roundedPrint(entry.getValue(),2) + ", Zweifel: " +roundedPrint(1-entry.getValue(),2)
+		   +", Believe: "+roundedPrint(getBelieveValue(entry.getKey(),length),2)+ "\n");
 		}
 		
 		return result.toString();
@@ -262,31 +271,52 @@ public class Dempster {
 			konflikt = 1/(1-konflikt);
 			
 			if(!accumulationDirectSpeed.isEmpty())
+			{
 				calculateThroughMap(accumulationDirectSpeed,konflikt);
+				calculateBelieve(accumulationDirectSpeed);
+			}
 			
 			if(!accumulationDirectNeutralSpeed.isEmpty())
+			{
 				calculateThroughMap(accumulationDirectNeutralSpeed,konflikt);
-			
+				calculateBelieve(accumulationDirectSpeed);
+			}
 			if(!accumulationDirectUnknow.isEmpty())
+			{
 				calculateThroughMap(accumulationDirectUnknow,konflikt);
-			
+				calculateBelieve(accumulationDirectUnknow);
+			}
 			if(!accumulationNeutralDirectionSpeed.isEmpty())
+			{
 				calculateThroughMap(accumulationNeutralDirectionSpeed,konflikt);
-			
+				calculateBelieve(accumulationNeutralDirectionSpeed);
+			}
 			if(!accumulationUnknown.isEmpty())
+			{
 				calculateThroughMap(accumulationUnknown,konflikt);
-			
+				calculateBelieve(accumulationUnknown);
+			}
 			if(!accumulationUnknownSpeed.isEmpty())
+			{
 				calculateThroughMap(accumulationUnknownSpeed,konflikt);
-			
+				calculateBelieve(accumulationUnknownSpeed);
+			}
 			if(!accumulationNeutralDirectionNeutralSpeed.isEmpty())
+			{
 				calculateThroughMap(accumulationNeutralDirectionNeutralSpeed,konflikt);
-			
+				calculateBelieve(accumulationNeutralDirectionNeutralSpeed);
+			}
 			if(!accumulationUnknownNeutralSpeed.isEmpty())
+			{	
 				calculateThroughMap(accumulationUnknownNeutralSpeed,konflikt);
-			
+				calculateBelieve(accumulationUnknownNeutralSpeed);
+			}
 			if(!accumulationNeutralDirectionUnknown.isEmpty())
+			{
 				calculateThroughMap(accumulationNeutralDirectionUnknown,konflikt);
+				calculateBelieve(accumulationNeutralDirectionUnknown);
+			}
+		
 
 		}
 		
@@ -305,6 +335,70 @@ public class Dempster {
 		return plausibilität;
 	}
 	
+	//Berechnen der Believewerte
+	private void calculateBelieve(Map<String, Double> accumulation) 
+	{
+		if(accumulation.size()==1)
+		{
+			String emotion = getFirstKeyofHashMap(accumulation);
+			double value = getFirstValueofHashMap(accumulation);
+			
+			if (Emotion.AERGER.toString().equals(emotion)) {
+				Emotion.AERGER.setBelieve(Emotion.AERGER.getBelieve()+value);
+			}
+			else if (Emotion.EKEL.toString().equals(emotion))
+			{
+				Emotion.EKEL.setBelieve(Emotion.EKEL.getBelieve()+value);
+			}
+			else if (Emotion.FREUDE.toString().equals(emotion))
+			{
+				Emotion.FREUDE.setBelieve(Emotion.FREUDE.getBelieve()+value);
+			}
+			else if (Emotion.TRAUER.toString().equals(emotion))
+			{
+				Emotion.TRAUER.setBelieve(Emotion.TRAUER.getBelieve()+value);
+			}
+			else if (Emotion.VERACHTUNG.toString().equals(emotion))
+			{
+				Emotion.VERACHTUNG.setBelieve(Emotion.VERACHTUNG.getBelieve()+value);
+			}
+			else if (Emotion.ÜBERRASCHUNG.toString().equals(emotion))
+			{
+				Emotion.ÜBERRASCHUNG.setBelieve(Emotion.ÜBERRASCHUNG.getBelieve()+value);
+			}	
+		}
+		
+	}
+
+	//Zurückgeben des Believewerts, teile ihn vor der Rückgabe durch die Anzahl der vorhandenen Auswertungen
+	private double getBelieveValue(String emotion, int length)
+	{
+		double result = 0;
+		if (Emotion.AERGER.toString().equals(emotion)) {
+			result = Emotion.AERGER.getBelieve();
+		}
+		else if (Emotion.EKEL.toString().equals(emotion))
+		{
+			result = Emotion.EKEL.getBelieve();
+		}
+		else if (Emotion.FREUDE.toString().equals(emotion))
+		{
+			result = Emotion.FREUDE.getBelieve();
+		}
+		else if (Emotion.TRAUER.toString().equals(emotion))
+		{
+			result = Emotion.TRAUER.getBelieve();
+		}
+		else if (Emotion.VERACHTUNG.toString().equals(emotion))
+		{
+			result = Emotion.VERACHTUNG.getBelieve();
+		}
+		else if (Emotion.ÜBERRASCHUNG.toString().equals(emotion))
+		{
+			result = Emotion.ÜBERRASCHUNG.getBelieve();
+		}	
+		return result/length;
+	}
 	
 	//Bestimme den Durchschnitt zweier Mengen
 	private Map<String,Double> intersectCalculate(Map<String, Double> mapOne, Map<String, Double> mapTwo)

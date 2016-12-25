@@ -11,7 +11,7 @@ public class Transformer {
 
 	public ArrayList<PointList> readCSV() {
 		//Einlesen der csv Datei
-		String csvFile = "../csv/klopfen.csv";
+		String csvFile = "../csv/alles.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
