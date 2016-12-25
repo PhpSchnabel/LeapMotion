@@ -61,6 +61,7 @@ public class PointList extends LinkedList<Point> {
         }
     }
 
+    //PointList an PointList anhängen
 	public void append(PointList list){
         for (Point point:list) {
             this.add(point);
