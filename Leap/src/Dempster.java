@@ -11,14 +11,16 @@ public class Dempster {
 	Map<String, Double> open = new HashMap<String, Double>();
 	Map<String, Double> repeat = new HashMap<String, Double>();
 	Map<String, Double> closed = new HashMap<String, Double>();
-	Map<String, Double> directionUnknown = new HashMap<String, Double>();
+	Map<String, Double> directionNeutral = new HashMap<String, Double>();
 	Map<String, Double> slow = new HashMap<String, Double>();
 	Map<String, Double> fast = new HashMap<String, Double>();
-	Map<String, Double> speedUnknown = new HashMap<String, Double>();
+	Map<String, Double> speedNeutral = new HashMap<String, Double>();
+	Map<String, Double> unknown = new HashMap<String, Double>();
 	
 	
 	private final double defaultPOSSIBLE = 0.7;
-	private final double defaultUNKNOWN = 0.3;
+	private final double defaultNEUTRAL = 0.2;
+	private final double defaultUNKNOWN = 0.1;
 	private final String EMPTY = "empty";
 	
 	
@@ -40,8 +42,8 @@ public class Dempster {
 		
 		closed.put(Emotion.TRAUER.toString(),defaultPOSSIBLE);
 		
-		directionUnknown.put(Emotion.VERACHTUNG.toString(),defaultUNKNOWN);
-		directionUnknown.put(Emotion.EKEL.toString(),defaultUNKNOWN);
+		directionNeutral.put(Emotion.VERACHTUNG.toString(),defaultNEUTRAL);
+		directionNeutral.put(Emotion.EKEL.toString(),defaultNEUTRAL);
 		
 		
 		//Ärger und Freude sollten weniger Plausibel sein: noch nach Lösung suchen
@@ -53,7 +55,15 @@ public class Dempster {
 		fast.put(Emotion.VERACHTUNG.toString(),defaultPOSSIBLE);
 		fast.put(Emotion.EKEL.toString(),defaultPOSSIBLE);
 		
-		speedUnknown.put(Emotion.ÜBERRASCHUNG.toString(), defaultUNKNOWN);
+		speedNeutral.put(Emotion.ÜBERRASCHUNG.toString(), defaultNEUTRAL);
+		
+		//Eventuelle Meßfehler ausgleichen
+		unknown.put(Emotion.AERGER.toString(), defaultUNKNOWN);
+		unknown.put(Emotion.EKEL.toString(), defaultUNKNOWN);
+		unknown.put(Emotion.FREUDE.toString(), defaultUNKNOWN);
+		unknown.put(Emotion.TRAUER.toString(), defaultUNKNOWN);
+		unknown.put(Emotion.VERACHTUNG.toString(), defaultUNKNOWN);
+		unknown.put(Emotion.ÜBERRASCHUNG.toString(), defaultUNKNOWN);
 		
 	}
 
@@ -82,17 +92,6 @@ public class Dempster {
 		
 		return result.toString();
 	}
-	
-	private double calculateAverage(double value, int length)
-	{
-		return value/length;
-	}
-	
-	
-	
-	
-	
-	
 	
 	private List<Gesture> analyzeForRepeats(ArrayList<Gesture> gestureList) {
 		
@@ -167,10 +166,20 @@ public class Dempster {
 	private Map<String,Double> calculcateEvidence(Map<String, Double> possibleDirection, Map<String, Double> possibleSpeed) {
 		
 		//Akumulation der Werte
+		//da
 		Map<String,Double> accumulationDirectSpeed = intersectCalculate(possibleDirection, possibleSpeed);
-		Map<String,Double> accumulationDirectUnknown = intersectCalculate(possibleDirection, speedUnknown);
-		Map<String,Double> accumulationUnknownSpeed = intersectCalculate(directionUnknown, possibleSpeed);
-		Map<String,Double> accumulationUnknown = intersectCalculate(directionUnknown, speedUnknown);
+		//da
+		Map<String,Double> accumulationDirectNeutralSpeed = intersectCalculate(possibleDirection, speedNeutral);
+		
+		Map<String,Double> accumulationDirectUnknow = intersectCalculate(possibleDirection, unknown);
+		//da
+		Map<String,Double> accumulationNeutralDirectionSpeed = intersectCalculate(directionNeutral, possibleSpeed);
+		Map<String,Double> accumulationUnknownSpeed = intersectCalculate(unknown, possibleSpeed);
+		Map<String,Double> accumulationNeutralDirectionNeutralSpeed = intersectCalculate(directionNeutral, speedNeutral);
+		Map<String,Double> accumulationUnknownNeutralSpeed = intersectCalculate(unknown, speedNeutral);
+		Map<String,Double> accumulationNeutralDirectionUnknown = intersectCalculate(directionNeutral, unknown);
+		//da
+		Map<String,Double> accumulationUnknown = intersectCalculate(unknown, unknown);
 		
 		Map<String, Double> plausibilität = new HashMap<String, Double>();
 		
@@ -182,21 +191,49 @@ public class Dempster {
 			konflikt +=getFirstValueofHashMap(accumulationDirectSpeed);
 			accumulationDirectSpeed.clear();
 		}
-		if(getFirstKeyofHashMap(accumulationDirectUnknown).equals(EMPTY))
+		if(getFirstKeyofHashMap(accumulationDirectNeutralSpeed).equals(EMPTY))
 		{
-			konflikt +=getFirstValueofHashMap(accumulationDirectUnknown);
-			accumulationDirectUnknown.clear();
+			konflikt +=getFirstValueofHashMap(accumulationDirectNeutralSpeed);
+			accumulationDirectNeutralSpeed.clear();
 		}
-		if(getFirstKeyofHashMap(accumulationUnknownSpeed).equals(EMPTY))
+		if(getFirstKeyofHashMap(accumulationDirectUnknow).equals(EMPTY))
 		{
-			konflikt +=getFirstValueofHashMap(accumulationUnknownSpeed);
-			accumulationUnknownSpeed.clear();
+			konflikt +=getFirstValueofHashMap(accumulationDirectUnknow);
+			accumulationDirectUnknow.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationNeutralDirectionSpeed).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationNeutralDirectionSpeed);
+			accumulationNeutralDirectionSpeed.clear();
 		}
 		if(getFirstKeyofHashMap(accumulationUnknown).equals(EMPTY))
 		{
 			konflikt +=getFirstValueofHashMap(accumulationUnknown);
 			accumulationUnknown.clear();
 		}
+		if(getFirstKeyofHashMap(accumulationUnknownSpeed).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationUnknownSpeed);
+			accumulationUnknownSpeed.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationNeutralDirectionNeutralSpeed).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationNeutralDirectionNeutralSpeed);
+			accumulationNeutralDirectionNeutralSpeed.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationUnknownNeutralSpeed).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationUnknownNeutralSpeed);
+			accumulationUnknownNeutralSpeed.clear();
+		}
+		if(getFirstKeyofHashMap(accumulationNeutralDirectionUnknown).equals(EMPTY))
+		{
+			konflikt +=getFirstValueofHashMap(accumulationNeutralDirectionUnknown);
+			accumulationNeutralDirectionUnknown.clear();
+		}
+		
+		
+		
 		
 		if(Double.compare(konflikt, 0)!= 0)
 		{
@@ -205,26 +242,45 @@ public class Dempster {
 			if(!accumulationDirectSpeed.isEmpty())
 				calculateThroughMap(accumulationDirectSpeed,konflikt);
 			
-			if(!accumulationDirectUnknown.isEmpty())
-				calculateThroughMap(accumulationDirectUnknown,konflikt);
+			if(!accumulationDirectNeutralSpeed.isEmpty())
+				calculateThroughMap(accumulationDirectNeutralSpeed,konflikt);
 			
-			if(!accumulationUnknownSpeed.isEmpty())
-				calculateThroughMap(accumulationUnknownSpeed,konflikt);
+			if(!accumulationDirectUnknow.isEmpty())
+				calculateThroughMap(accumulationDirectUnknow,konflikt);
+			
+			if(!accumulationNeutralDirectionSpeed.isEmpty())
+				calculateThroughMap(accumulationNeutralDirectionSpeed,konflikt);
 			
 			if(!accumulationUnknown.isEmpty())
 				calculateThroughMap(accumulationUnknown,konflikt);
 			
+			if(!accumulationUnknownSpeed.isEmpty())
+				calculateThroughMap(accumulationUnknownSpeed,konflikt);
+			
+			if(!accumulationNeutralDirectionNeutralSpeed.isEmpty())
+				calculateThroughMap(accumulationNeutralDirectionNeutralSpeed,konflikt);
+			
+			if(!accumulationUnknownNeutralSpeed.isEmpty())
+				calculateThroughMap(accumulationUnknownNeutralSpeed,konflikt);
+			
+			if(!accumulationNeutralDirectionUnknown.isEmpty())
+				calculateThroughMap(accumulationNeutralDirectionUnknown,konflikt);
+
 		}
 		
 		
 		//Plausibilität
 		
 		accumulationDirectSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
-		accumulationDirectUnknown.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
-		accumulationUnknownSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationDirectNeutralSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationDirectUnknow.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationNeutralDirectionSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
 		accumulationUnknown.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
-		
-		
+		accumulationUnknownSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationNeutralDirectionNeutralSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationUnknownNeutralSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+		accumulationNeutralDirectionUnknown.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
+
 		return plausibilität;
 	}
 	

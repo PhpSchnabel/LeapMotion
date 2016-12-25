@@ -9,7 +9,7 @@ public class Transformer {
 	private ArrayList<PointList> myPointLists = new ArrayList<PointList>();
 
 	public ArrayList<PointList> readCSV() {
-		String csvFile = "../csv/alles.csv";
+		String csvFile = "../csv/close_slow.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";

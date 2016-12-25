@@ -13,7 +13,7 @@ public class Main {
 			gestureList.add(list.getGesture());
 		}
 		Dempster dempster = new Dempster();
-		
+		gestureList.forEach((g)->System.out.println(g.getDirection()+ ", "+g.getSpeed()));
 		System.out.println(dempster.analyzeGestures(gestureList));
 		
 		//pointList.getGesture());
