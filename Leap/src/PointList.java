@@ -3,13 +3,14 @@ import java.math.*;
 
 public class PointList extends LinkedList<Point> {
 
-	public String getGesture(){
+	public Gesture getGesture(){
 
 	    //nur x,y ist relevant, z spielt für die Bewegungsunterscheidung keine Rolle
 
 		Double avgDistanceX = 0.0;
 		Double avgDistanceY = 0.0;
-		StringBuilder strReturn = new StringBuilder();
+		Gesture gesture = new Gesture();
+		//StringBuilder strReturn = new StringBuilder();
 
 		//die Koordinaten des ersten Punktes speichern
         double x = getFirst().getX();
@@ -29,32 +30,34 @@ public class PointList extends LinkedList<Point> {
 		avgDistanceX = avgDistanceX/(this.size()-1);
         avgDistanceY = avgDistanceY/(this.size()-1);
 
-        strReturn.append("Bewegung: ");
         if(avgDistanceX < 20 && avgDistanceY > 20){
-            strReturn.append("klopfen ");
-        }
+        	gesture.setDirection(Direction.REPEAT);
+             }
         else{
-            strReturn.append(getDirection());
-
-            //Geschwindigkeit abhängig der Anzahl der erkannten Punkte
-            if((this.size()-1) < 75){
-                strReturn.append("schnell");
+           gesture.setDirection(getDirection());
+        }
+        	//Geschwindigkeit abhängig der Anzahl der erkannten Punkte
+         if((this.size()-1) < 75){
+                gesture.setSpeed(Speed.FAST);
             }
             else{
-                strReturn.append("langsam");
+            	gesture.setSpeed(Speed.SLOW);
             }
-        }
+     
 
-		return strReturn.toString();
+		return gesture;
 
 	}
 
-    private String getDirection(){
+    private Direction getDirection(){
         if(this.getFirst().getX() < this.getLast().getX()){
-            return "Bewegung rechts ";
+            //strReturn.append("rechts ");
+        	return Direction.OPEN;
+        	
         }
         else{
-            return "Bewegung links ";
+        	//strReturn.append("links ");
+            return Direction.CLOSE;
         }
     }
 

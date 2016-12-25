@@ -1,5 +1,9 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class Dempster {
@@ -52,9 +56,79 @@ public class Dempster {
 		speedUnknown.put(Emotion.ÜBERRASCHUNG.toString(), defaultUNKNOWN);
 		
 	}
+
+	public String analyzeGestures(ArrayList<Gesture> gestureList)
+	{
+		List<Gesture> analyzedList = analyzeForRepeats(gestureList);
+		int length = analyzedList.size();
+		Map<String,Double> resultList = new HashMap<String,Double>();
+		
+		for(Gesture g: analyzedList)
+		{
+			getPossibleResults(g.getDirection(), g.getSpeed()).forEach((k, v) -> resultList.merge(k, v, (v1, v2) -> v1 + v2));
+		}
+		
+		//Berechne die durchschnittliche Plausibilität
+		for (Map.Entry<String, Double> entry : resultList.entrySet()) {
+		    entry.setValue(entry.getValue()/length);
+		}
+		
+		
+		StringBuilder result = new StringBuilder();
+		
+		for (Map.Entry<String, Double> entry : resultList.entrySet()) {
+		   result.append(" Emotion: "+entry.getKey()+", Plausibilität: "+entry.getValue().toString()+"\n");
+		}
+		
+		return result.toString();
+	}
+	
+	private double calculateAverage(double value, int length)
+	{
+		return value/length;
+	}
 	
 	
-	public String getPossibleResults(Direction direction,Speed speed)
+	
+	
+	
+	
+	
+	private List<Gesture> analyzeForRepeats(ArrayList<Gesture> gestureList) {
+		
+		
+		List<Gesture> analyzedList = new ArrayList<Gesture>();
+		
+	for(int i = 0; i < gestureList.size(); i++ )
+	{
+			Gesture actual = gestureList.get(i);
+			
+			
+		if((i+1)<gestureList.size())
+		{
+			Gesture next = gestureList.get(i+1);
+			
+			if((actual.getDirection() == Direction.OPEN && next.getDirection() == Direction.CLOSE)||
+					(actual.getDirection() == Direction.CLOSE && next.getDirection() == Direction.OPEN))
+			{
+				actual.setDirection(Direction.REPEAT);
+				analyzedList.add(actual);
+				++i;
+			}else
+			{
+				analyzedList.add(actual);
+			}
+		}
+		else
+		{
+			analyzedList.add(actual);
+		}
+	}
+		return analyzedList;
+		
+	}
+
+	private Map<String,Double> getPossibleResults(Direction direction,Speed speed)
 	{
 		String result = "";
 		Map<String, Double> possibleDirection = null;
@@ -87,14 +161,12 @@ public class Dempster {
 			break;
 		}
 		
-		if(possibleDirection != null && possibleSpeed != null)
-			result = calculcateEvidence(possibleDirection,possibleSpeed);
-		
-		return result;
+		return calculcateEvidence(possibleDirection,possibleSpeed);
 	}
 
-	private String calculcateEvidence(Map<String, Double> possibleDirection, Map<String, Double> possibleSpeed) {
-		// TODO Auto-generated method stub
+	private Map<String,Double> calculcateEvidence(Map<String, Double> possibleDirection, Map<String, Double> possibleSpeed) {
+		
+		//Akumulation der Werte
 		Map<String,Double> accumulationDirectSpeed = intersectCalculate(possibleDirection, possibleSpeed);
 		Map<String,Double> accumulationDirectUnknown = intersectCalculate(possibleDirection, speedUnknown);
 		Map<String,Double> accumulationUnknownSpeed = intersectCalculate(directionUnknown, possibleSpeed);
@@ -152,12 +224,8 @@ public class Dempster {
 		accumulationUnknownSpeed.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
 		accumulationUnknown.forEach((k, v) -> plausibilität.merge(k, v, (v1, v2) -> v1 + v2));
 		
-		StringBuilder result = new StringBuilder();
 		
-		for (Map.Entry<String, Double> entry : plausibilität.entrySet()) {
-		   result.append(" Emotion: "+entry.getKey()+" Plausibilität: "+entry.getValue().toString()+"\n");
-		}
-		return result.toString();
+		return plausibilität;
 	}
 	
 	private Map<String,Double> intersectCalculate(Map<String, Double> mapOne, Map<String, Double> mapTwo)

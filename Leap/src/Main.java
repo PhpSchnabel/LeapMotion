@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Main {
 	
@@ -7,11 +8,15 @@ public class Main {
 		// TODO Auto-generated method stub
 		Transformer transformer = new Transformer();
 		ArrayList<PointList> arrayList = transformer.readCSV();
-
+		ArrayList<Gesture> gestureList = new ArrayList<Gesture>();
 		for (PointList list:arrayList) {
-			System.out.println(list.getGesture());
+			gestureList.add(list.getGesture());
 		}
-		//System.out.println(pointList.getGesture());
+		Dempster dempster = new Dempster();
+		
+		System.out.println(dempster.analyzeGestures(gestureList));
+		
+		//pointList.getGesture());
 
 	}
 
