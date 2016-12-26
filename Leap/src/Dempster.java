@@ -279,7 +279,7 @@ public class Dempster {
 			if(!accumulationDirectNeutralSpeed.isEmpty())
 			{
 				calculateThroughMap(accumulationDirectNeutralSpeed,konflikt);
-				calculateBelieve(accumulationDirectSpeed);
+				calculateBelieve(accumulationDirectNeutralSpeed);
 			}
 			if(!accumulationDirectUnknow.isEmpty())
 			{
